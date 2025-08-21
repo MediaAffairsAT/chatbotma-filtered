@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect, useContext, useLayoutEffect } from 'react'
 import { CommandBarButton, IconButton, Dialog, DialogType, Stack } from '@fluentui/react'
 import { SquareRegular, ShieldLockRegular, ErrorCircleRegular } from '@fluentui/react-icons'
-
+import { FilterPanel, ChatFilters } from "../../components/FilterPanel";
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
@@ -65,7 +65,11 @@ const Chat = () => {
   const [errorMsg, setErrorMsg] = useState<ErrorMessage | null>()
   const [logo, setLogo] = useState('')
   const [answerId, setAnswerId] = useState<string>('')
-
+  const [chatFilters, setChatFilters] = useState<ChatFilters>({
+    projectId: '',
+    startDate: null,
+    endDate: null
+  });
   const errorDialogContentProps = {
     type: DialogType.close,
     title: errorMsg?.title,
@@ -179,6 +183,11 @@ const Chat = () => {
     }
   }
 
+  const handleFiltersChange = (filters: ChatFilters) => {
+    setChatFilters(filters);
+    console.log('Filter geändert:', filters);
+  };
+  
   const makeApiRequestWithoutCosmosDB = async (question: ChatMessage["content"], conversationId?: string) => {
     setIsLoading(true)
     setShowLoadingMessage(true)
@@ -794,9 +803,19 @@ const Chat = () => {
                 <img src={logo} className={styles.chatIcon} aria-hidden="true" />
                 <h1 className={styles.chatEmptyStateTitle}>{ui?.chat_title}</h1>
                 <h2 className={styles.chatEmptyStateSubtitle}>{ui?.chat_description}</h2>
+                {/* Filter Panel hinzufügen */}
+                <div style={{ marginTop: '20px', width: '100%', maxWidth: '800px' }}>
+                  <FilterPanel onFiltersChange={handleFiltersChange} />
+                </div>
               </Stack>
             ) : (
-              <div className={styles.chatMessageStream} style={{ marginBottom: isLoading ? '40px' : '0px' }} role="log">
+              <>
+                {/* Filter Panel auch für Chat mit Messages */}
+                <div style={{ padding: '0 20px', marginBottom: '16px' }}>
+                  <FilterPanel onFiltersChange={handleFiltersChange} />
+                </div>
+                <div className={styles.chatMessageStream} style={{ marginBottom: isLoading ? '40px' : '0px' }} role="log">
+                
                 {messages.map((answer, index) => (
                   <>
                     {answer.role === 'user' ? (
@@ -847,9 +866,10 @@ const Chat = () => {
                   </>
                 )}
                 <div ref={chatMessageStreamEnd} />
-              </div>
+</div>
+              </>
             )}
-
+            
             <Stack horizontal className={styles.chatInput}>
               {isLoading && messages.length > 0 && (
                 <Stack
