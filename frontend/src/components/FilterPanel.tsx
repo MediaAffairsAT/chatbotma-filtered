@@ -1,4 +1,4 @@
-// FilterPanel.tsx - Neue Datei für src/components/
+// FilterPanel.tsx - Korrigierte Version mit TypeScript-Fixes
 import React, { useState } from 'react';
 import { Dropdown, DatePicker, Stack, Label, IDropdownOption } from '@fluentui/react';
 import styles from './FilterPanel.module.css';
@@ -76,6 +76,10 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => 
     });
   };
 
+  const formatDate = (date?: Date): string => {
+    return date ? date.toLocaleDateString('de-DE') : '';
+  };
+
   return (
     <div className={styles.filterPanel}>
       <Stack tokens={{ childrenGap: 15 }}>
@@ -97,9 +101,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => 
             <Label>Von Datum</Label>
             <DatePicker
               placeholder="Startdatum wählen"
-              value={startDate}
+              value={startDate || undefined}
               onSelectDate={handleStartDateChange}
-              formatDate={(date?: Date) => date?.toLocaleDateString('de-DE')}
+              formatDate={formatDate}
             />
           </Stack.Item>
 
@@ -107,9 +111,9 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => 
             <Label>Bis Datum</Label>
             <DatePicker
               placeholder="Enddatum wählen"
-              value={endDate}
+              value={endDate || undefined}
               onSelectDate={handleEndDateChange}
-              formatDate={(date?: Date) => date?.toLocaleDateString('de-DE')}
+              formatDate={formatDate}
             />
           </Stack.Item>
 
@@ -135,12 +139,12 @@ export const FilterPanel: React.FC<FilterPanelProps> = ({ onFiltersChange }) => 
             )}
             {startDate && (
               <span className={styles.filterTag}>
-                📅 Ab: {startDate.toLocaleDateString('de-DE')}
+                📅 Ab: {formatDate(startDate)}
               </span>
             )}
             {endDate && (
               <span className={styles.filterTag}>
-                📅 Bis: {endDate.toLocaleDateString('de-DE')}
+                📅 Bis: {formatDate(endDate)}
               </span>
             )}
           </div>
