@@ -16,8 +16,8 @@
 name: Build and deploy React App to Azure Web App
 
 env:
-  AZURE_WEBAPP_NAME: chatbotma  # set this to the name of your Azure Web App
-  NODE_VERSION: '18'           # set this to the node version to use
+  AZURE_WEBAPP_NAME: chatbotma
+  NODE_VERSION: '18'
 
 on:
   push:
@@ -30,7 +30,6 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
