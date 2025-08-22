@@ -37,23 +37,13 @@ jobs:
 
       - name: Install Python Backend Dependencies
         run: |
-          cd backend
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Copy Frontend Build to Static
+      - name: Copy Frontend Build to Static folder
         run: |
-          mkdir -p app_root/static
-          cp -r frontend/build/* app_root/static/
-          cp -r backend/* app_root/
-          echo "web: python app.py" > app_root/Procfile
-
-      - name: Create startup script
-        run: |
-          echo '#!/bin/bash' > app_root/startup.sh
-          echo 'python app.py &' >> app_root/startup.sh
-          echo 'npx serve -s static -l $PORT' >> app_root/startup.sh
-          chmod +x app_root/startup.sh
+          mkdir -p static
+          cp -r frontend/build/* static/
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -66,4 +56,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'chatbotma-nodejs'
-          package: app_root
+          package: .
