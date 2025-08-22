@@ -41,4 +41,4 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'chatbotma-nodejs'
-          package: frontend/build
+          package: static
