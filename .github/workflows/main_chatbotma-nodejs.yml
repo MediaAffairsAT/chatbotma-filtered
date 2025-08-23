@@ -32,8 +32,12 @@ jobs:
         run: |
           cd frontend
           npm ci
-          NODE_OPTIONS=--max_old_space_size=8192 npm run build --if-present
+          echo "=== Available npm scripts ==="
+          npm run
+          echo "=== Running build ==="
+          NODE_OPTIONS=--max_old_space_size=8192 npm run build
           npm run test --if-present
+          
       
       - name: Debug - Check build output
         run: |
@@ -77,5 +81,6 @@ jobs:
         with:
           app-name: 'chatbotma-nodejs'
           package: .
+
 
 
