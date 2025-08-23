@@ -1,89 +1,54 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 name: Build and deploy Full-Stack app to Azure Web App - chatbotma-nodejs
-
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       id-token: write
-
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
           node-version: '18.x'
-
       - name: Set up Python version
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-
       - name: Build React Frontend
         run: |
           cd frontend
           npm ci
-          echo "=== Package.json scripts ==="
-          cat package.json | grep -A 10 -B 2 '"scripts"'
-          echo "=== Available npm scripts ==="
-          npm run
-          echo "=== Trying build ==="
-          NODE_OPTIONS=--max_old_space_size=8192 npm run build || echo "Build script failed or doesn't exist"
+          NODE_OPTIONS=--max_old_space_size=8192 npm run build
           npm run test --if-present
-          
       
-      - name: Debug - Check build output
-        run: |
-          echo "=== Frontend directory contents ==="
-          ls -la frontend/
-          echo "=== Looking for build/dist folders ==="
-          ls -la frontend/build/ 2>/dev/null || echo "No build folder"
-          ls -la frontend/dist/ 2>/dev/null || echo "No dist folder"
-          echo "=== All directories in frontend ==="
-          find frontend -type d -name "*build*" -o -name "*dist*" 2>/dev/null || echo "No build/dist folders found"
-
       - name: Install Python Backend Dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       
-      - name: Copy Frontend Build to Static folder
+      - name: Verify Build Output
         run: |
-          mkdir -p static
-          # Try both possible locations
-          if [ -d "frontend/dist" ]; then
-            cp -r frontend/dist/* static/
-            echo "Copied from frontend/dist/"
-          elif [ -d "frontend/build" ]; then
-            cp -r frontend/build/* static/
-            echo "Copied from frontend/build/"
-          else
-            echo "ERROR: No build output found!"
-            exit 1
-          fi
-
+          echo "=== Static folder contents ==="
+          ls -la static/
+          echo "=== Build successful! Files are ready for deployment ==="
+      
       - name: Login to Azure
         uses: azure/login@v2
         with:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_27690970946A4CA18BA04A3E223A0B19 }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4767512BEDC641469A1CC70C267EFBF3 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_CE9E2DBEA26F48A7B766B3D54CA852DE }}
-
+      
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'chatbotma-nodejs'
           package: .
-
-
-
-
